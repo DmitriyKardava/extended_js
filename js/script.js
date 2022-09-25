@@ -1,20 +1,80 @@
-const goods = [
-    { title: 'Shirt', price: 150, img: 'https://via.placeholder.com/200x150' },
-    { title: 'Socks', price: 50, img: 'https://via.placeholder.com/200x150' },
-    { title: 'Jacket', price: 350, img: 'https://via.placeholder.com/200x150' },
-    { title: 'Shoes', price: 250, img: 'https://via.placeholder.com/200x150' },
-    ];
-    
-const renderProductItem = (item) => {
-    return `<div class="product-item">
-                <img src="${item.img}">
-                <h3>${item.title}</h3>
-                <p>${item.price}</p>
-                <btn class="btn-buy">В корзину</btn>
-            </div>`;
-    };
-const renderProductList = (list) => {
-    document.querySelector('.products').innerHTML = 
-        list.map(item => renderProductItem(item)).join('');
+class ProductsList {
+    constructor(container = '.products') {
+        this.container = container;
+        this.products = [];
+        this._fillProducts();
     }
-renderProductList(goods);
+    _fillProducts() {
+        this.products = [
+            {
+                id: 1, title: 'Shirt', price: 150,
+                img: 'https://via.placeholder.com/200x150'
+            },
+            {
+                id: 2, title: 'Socks', price: 50,
+                img: 'https://via.placeholder.com/200x150'
+            },
+            {
+                id: 3, title: 'Jacket', price: 350,
+                img: 'https://via.placeholder.com/200x150'
+            },
+            {
+                id: 4, title: 'Shoes', price: 250,
+                img: 'https://via.placeholder.com/200x150'
+            },
+        ];
+    }
+    render() {
+        const block = document.querySelector(this.container);
+        this.products.forEach(product => {
+            block.insertAdjacentHTML('beforeend',
+                new ProductItem(product).render());
+        });
+    }
+    getSum() {
+        return (this.products.reduce((sum, item) => sum + item.price, 0));
+    }
+}
+
+class ProductItem {
+    constructor(product) {
+        this.id = product.id;
+        this.title = product.title;
+        this.price = product.price;
+        this.img = product.img;
+    }
+    render() {
+        return `<div class="product-item" data-id="${this.id}">
+        <img src="${this.img}" alt="Product img">
+        <h3>${this.title}</h3>
+        <p>${this.price}</p>
+        <btn class="btn-buy">В корзину</btn>
+    </div>`;
+    }
+}
+
+class Basket {
+    addItem() {
+
+    }
+    deleteItem() {
+
+    }
+    changeItem() {
+
+    }
+    render() {
+
+    }
+}
+
+class BasketItem {
+    render() {
+
+    }
+}
+
+let list = new ProductsList();
+list.render();
+console.log(list.getSum());
+
