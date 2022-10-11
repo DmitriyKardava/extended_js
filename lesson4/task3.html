@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>html form validator</title>
+<style>
+    input {
+        width: 200px;
+        padding: 5px 10px;
+        margin: 10px 0;
+    }
+    input:focus{
+        outline: none;
+    }
+    button{
+        padding: 10px 20px;
+        text-transform: uppercase;
+        font-weight: bold;
+        border-radius: 5px;
+    }
+    .error-msg{
+        color: red;
+        margin: 10px 0;
+    }
+    .invalid{
+        border: 2px solid red;
+    }
+    .valid{
+        border: 2px solid green;
+    }
+</style>
+</head>
+<body>
+<form action="#" class="some" id="myform">
+    
+</form>
+<script>
+
+class Form{
+    constructor(form){
+        this.name = form.name;
+        this.fields = form.fields;
+        this.buttons = form.buttons;
+        this.errorClass = 'error-msg';
+        this.render();
+    }
+    render() {
+        const block = document.getElementById(this.name);
+    this.fields.forEach(field => {
+            block.insertAdjacentHTML('beforeend', new Field(field).render());
+            document.getElementById(field.name).value = field.default;     
+        });
+        block.insertAdjacentHTML('beforeend', '<button id="val-btn">Submit</button>');        
+    }
+    validate() {
+        let errors = [...document.getElementById(this.name).querySelectorAll(`.${this.errorClass}`)];
+        for (let error of errors){
+            error.remove();
+        }
+        this.fields.forEach ( field => {
+            let inp = document.getElementById(field.name);
+            if (!field.pattern.test(inp.value)) {
+                inp.classList.add('invalid');
+                inp.parentNode.insertAdjacentHTML('beforeend', 
+                        `<div class="${this.errorClass}">${field.error}</div> `);
+            }
+            else {
+                inp.classList.remove('invalid');
+            }
+        });
+    }
+}
+
+class Field{
+    constructor(field){
+        this.caption = field.caption;
+        this.name = field.name;
+        this.default = field.default;
+    }
+    render(){
+        return(
+            `<div>
+                <label>
+                    ${this.caption} <br>
+                    <input type="${this.type}" name="${this.name}" id="${this.name}">
+                </label>
+            </div>`
+        );
+    }
+}
+
+formData = {
+    'name': 'myform',
+    'fields': [
+        {
+            'name': 'name',
+            'type': 'text',
+            'caption': 'Your name',
+            'default':'',
+            'pattern': /^[a-zа-яё]+$/i, 
+            'error': 'Имя содержит только буквы'
+        }, 
+        {   
+            'name': 'phone',    
+            'type': 'tel',
+            'caption': 'Your phone',
+            'default': '',
+            'pattern': /^\+7\(\d{3}\)\d{3}-\d{4}$/, 
+            'error': 'Телефон подчиняется шаблону +7(000)000-0000'
+        },
+        {
+            'name': 'email',
+            'type': 'email',
+            'caption': 'Your email',
+            'default': '',
+            'pattern': /^[\w._-]+@\w+\.[a-z]{2,4}$/i,
+            'error': 'E-mail выглядит как mymail@mail.ru, или my.mail@mail.ru, или my-mail@mail.ru'
+        }
+    ],
+    'buttons': []
+};
+
+myForm = new Form(formData);
+
+window.onload = () => {
+        document.getElementById('myform').addEventListener('submit', e => {
+            if(!myForm.validate()){
+                e.preventDefault();
+            }
+        })
+    }
+
+</script>
+</body>
+</html>
